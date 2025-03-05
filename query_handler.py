@@ -1,63 +1,109 @@
-"""
-Query Handler to process the queries from the user and etract the required information from the database.
-"""
-from mock_database import search_flights
-import re
+import ollama
+import json
+import os
+from dotenv import load_dotenv
+from mock_database import search_flights_semantic
 
-def parse_query(query):
-    """"
-    Parse user query to extract relevant search parameters
+# Load environment variables
+load_dotenv()
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2:latest")  # Load model dynamically
 
-    Args: query (str): User query
-    Returns: dict: Query parameters
+def check_ollama_availability():
     """
-    query = query.lower()
-    search_params = {}
+    Check if Ollama server is available.
+    Returns: True if available, False otherwise.
+    """
+    import requests
+    try:
+        response = requests.get("http://localhost:11434/api/tags", timeout=3)
+        return response.status_code == 200
+    except requests.exceptions.RequestException:
+        return False
 
-    # Check for origin city
-    origin_indicator = ["from", "originating", "origin", "out of", "departing from", "leaving from"]
-    for indicator in origin_indicator:
-        if indicator in query:
-            parts = query.split(indicator, 1) # maximum split of 1
-            if len(parts) > 1:
-                potential_origin = parts[1].split()[0:2].strip()
-                search_params["origin"] = " ".join(potential_origin).title()
+OLLAMA_AVAILABLE = check_ollama_availability()
 
-    # Check for destination city
-    dest_indicators = ["to", "arriving at", "going to"]
-    for indicator in dest_indicators:
-        if indicator in query:
-            parts = query.split(indicator, 1)
-            if len(parts) > 1:
-                potential_dest = parts[1].split()[0:2]  # Assuming 2-word city names
-                search_params["destination"] = " ".join(potential_dest).title()
-                
-    # Check for flight number (even if 'flight' isn't explicitly mentioned)
-    flight_number_match = re.search(r'\b[A-Z]{2,4}\d{3,4}\b', query)  # Match patterns like 'NY100' or 'LA200'
-    if flight_number_match:
-        search_params["flight_number"] = flight_number_match.group(0).upper()
-        
-    return search_params
+def extract_entities_llama2(query):
+    """
+    Uses Ollama to extract structured flight details.
+    """
+    if not OLLAMA_AVAILABLE:
+        print("⚠️ Ollama server is not available. Using basic keyword search.")
+        return {}
+
+    print(f"🟢 Using Ollama model: {OLLAMA_MODEL}")  # Debugging to check model name
+
+    prompt = f"""
+    Extract structured information from the following query:
+
+    Query: "{query}"
+
+    Return a JSON object with the following fields:
+    - origin
+    - destination
+    - flight_number
+    - time
+    - date
+    - airline
+
+    If a field is missing, set it to null.
+    """
+
+    try:
+        print(f"🟢 Sending request to Ollama with model: {OLLAMA_MODEL}")  # Debugging
+        response = ollama.chat(
+            model=OLLAMA_MODEL.strip(),  # Ensure it's a clean string
+            messages=[{"role": "user", "content": prompt}]
+        )
+        print(f"🟢 Ollama API Response: {response}")  # Debugging
+
+        extracted = json.loads(response["message"]["content"])  # Convert response string into dictionary
+        extracted_clean = {k: v for k, v in extracted.items() if v is not None}  # Remove null values
+
+        print(f"🟢 Extracted Entities: {extracted_clean}")  # Debugging
+
+        return extracted_clean
+
+    except json.JSONDecodeError:
+        print("⚠️ Ollama returned an invalid response. Using fallback search.")
+        return {}
+
+    except Exception as e:
+        print(f"⚠️ Error during LLaMA 2 entity extraction: {e}")
+        return {}
+
 
 def process_query(query):
     """
-    Process user query and return relevant flight information
-    
-    Args: query (str): User's question
-    Returns: tuple: (bool success, str message, list matching_flights)
+    Process user query and return relevant flight information.
+
+    Args:
+        query (str): User's question
+
+    Returns:
+        tuple: (bool success, str message, list matching_flights)
     """
     try:
-        search_params = parse_query(query)
-        
+        print(f"🟢 Processing query: {query}")  # Debug print
+
+        search_params = extract_entities_llama2(query)
+        print(f"🟢 Extracted Search Params: {search_params}")  # Debug print
+
         if not search_params:
-            return False, "I couldn't understand the flight details in your question. Please try asking about specific origins, destinations, or flight numbers.", []
-            
-        matching_flights = search_flights(search_params)
-        
+            return False, (
+                "I couldn't understand your flight query. "
+                "Try specifying origin, destination, time, or airline."
+            ), []
+
+        # Perform semantic search using extracted parameters
+        matching_flights = search_flights_semantic(query)
+
+        print(f"🟢 Matching Flights: {matching_flights}")  # Debug print
+
         if not matching_flights:
             return False, "No flights found matching your criteria.", []
-            
-        return True, "Found matching flights!", matching_flights
-        
+
+        return True, "Here are the flights that match your criteria:", matching_flights
+
     except Exception as e:
+        print(f"❌ Error in process_query: {str(e)}")  # Debug print
         return False, f"An error occurred while processing your query: {str(e)}", []
