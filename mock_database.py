@@ -26,19 +26,38 @@ flights = [
     {"flight_number": "MI500", "origin": "Miami", "destination": "Rio de Janeiro", "time": "2025-05-02 07:30", "airline": "South American Airways"}
 ]
 
-def search_flights(query):
-    """Search for flights based on keywords in the query."""
-    query_lower = query.lower()
-    
-    # Match flights by checking if the query is present in any flight attribute
+def search_flights(origin=None, destination=None, flight_number=None, airline=None):
+    """
+    Search for flights based on exact matches for origin, destination, flight number, or airline.
+    Ensures that at least one valid filter is applied.
+    """
+    print(f"🔍 Searching for: Origin={origin}, Destination={destination}, Flight Number={flight_number}, Airline={airline}")
+
+    # ✅ If flight number is provided, prioritize searching by flight number only
+    if flight_number:
+        matches = [flight for flight in flights if flight["flight_number"].lower() == flight_number.lower()]
+        print(f"🔎 Flight number search results: {matches}")
+        return matches
+
+    # ✅ If no flight number, apply standard search
+    if not any([origin, destination, airline]):
+        print("⚠️ No valid search parameters provided. Returning an empty list.")
+        return []
+
+    # Normalize input (convert to lowercase)
+    origin = origin.lower() if origin else None
+    destination = destination.lower() if destination and destination != "city name" else None  # Ignore "City Name"
+    airline = airline.lower() if airline else None
+
+    # Filter flights with exact matching for provided fields
     matches = [
-        flight for flight in flights 
-        if query_lower in flight["origin"].lower()
-        or query_lower in flight["destination"].lower()
-        or query_lower in flight["flight_number"].lower()
-        or query_lower in flight["airline"].lower()
+        flight for flight in flights
+        if (not origin or flight["origin"].lower() == origin)
+        and (not destination or flight["destination"].lower() == destination)
+        and (not airline or flight["airline"].lower() == airline)
     ]
-    
+
+    print(f"🔎 Found flights: {matches}")
     return matches
 
 if __name__ == "__main__":
