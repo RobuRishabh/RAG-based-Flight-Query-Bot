@@ -1,4 +1,5 @@
 import unittest
+import requests
 from unittest.mock import patch, Mock
 from ollama_api import initialize_ollama, check_ollama_availability, generate_response, generate_fallback_response
 
