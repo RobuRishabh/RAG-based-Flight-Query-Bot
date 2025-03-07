@@ -31,6 +31,7 @@ pillow
 pydantic
 python-dateutil
 python-dotenv
+pytest
 PyYAML
 requests
 scikit-learn
