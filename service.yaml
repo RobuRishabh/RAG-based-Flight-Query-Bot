@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flight-assistant-service
+spec:
+  selector:
+    app: flight-assistant
+  ports:
+    - protocol: TCP
+      port: 8501 #80
+      targetPort: 8501
+  type: LoadBalancer

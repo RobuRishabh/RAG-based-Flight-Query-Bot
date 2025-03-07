@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flight-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flight-assistant
+  template:
+    metadata:
+      labels:
+        app: flight-assistant
+    spec:
+      containers:
+        - name: flight-assistant
+          image: roburishabh/flight-assistant:latest
+          ports:
+            - containerPort: 8501
+          env:
+            - name: OLLAMA_URL
+              value: "http://ollama-service:11434"
+            - name: OLLAMA_MODEL
+              value: "llama2:latest"
