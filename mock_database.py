@@ -1,12 +1,19 @@
+import os
 import requests
 
 def check_ollama_availability():
     """Check if the Ollama server is available."""
+    ollama_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
     try:
-        response = requests.get("http://localhost:11434/api/tags", timeout=3)
-        return response.status_code == 200
-    except requests.RequestException:
-        print("⚠️ Ollama server is not available.")
+        response = requests.get(f"{ollama_url}/api/tags", timeout=3)
+        if response.status_code == 200:
+            print(f"🟢 Ollama server is available at {ollama_url}.")
+            return True
+        else:
+            print(f"⚠️ Ollama server returned status {response.status_code} at {ollama_url}.")
+            return False
+    except requests.RequestException as e:
+        print(f"⚠️ Ollama server is not available at {ollama_url}: {str(e)}")
         return False
 
 

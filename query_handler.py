@@ -3,21 +3,11 @@ import json
 import os
 import re
 from dotenv import load_dotenv
-from mock_database import search_flights  # Import the correct function
+from mock_database import search_flights, check_ollama_availability
 
 # Load environment variables
 load_dotenv()
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2:latest")  # Load model dynamically
-
-def check_ollama_availability():
-    """Check if the Ollama server is available before calling it."""
-    import requests
-    try:
-        response = requests.get("http://localhost:11434/api/tags", timeout=3)
-        return response.status_code == 200
-    except requests.RequestException:
-        print("⚠️ Ollama server is not available.")
-        return False
 
 OLLAMA_AVAILABLE = check_ollama_availability()
 

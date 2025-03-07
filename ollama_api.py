@@ -19,7 +19,7 @@ if not OLLAMA_MODEL:
 def initialize_ollama():
     """Initialize the Ollama LLM model safely."""
     try:
-        ollama_llm = OllamaLLM(model=OLLAMA_MODEL)
+        ollama_llm = OllamaLLM(model=OLLAMA_MODEL, base_url=OLLAMA_URL)
         print(f"🟢 Successfully initialized Ollama LLM with model: {OLLAMA_MODEL}")
         return ollama_llm
     except Exception as e:
