@@ -42,5 +42,4 @@ tenacity
 tqdm
 typing_extensions
 urllib3
-unittest-mock
 watchdog
