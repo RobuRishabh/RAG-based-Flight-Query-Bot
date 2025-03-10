@@ -4,6 +4,20 @@
 The RAG-based Flight Query Bot is a Streamlit-powered web application that allows users to query flight information using natural language (e.g., "Show me flights from New York to London"). It uses Retrieval-Augmented Generation (RAG) with an Ollama language model to extract entities from queries and retrieve flight data from a mock database. The project is deployed on a local Kubernetes cluster using Minikube and includes a CI/CD pipeline with GitHub Actions for automated testing.
 
 ### Architecture
+```
+  RAG-based-Flight-Query-Bot/
+  ├── .github/
+  │   └── workflows/
+  │       └── test.yml
+  ├── tests/
+  │   └── test_mock_database.py
+  ├── mock_database.py
+  ├── query_handler.py
+  ├── ollama_api.py
+  ├── app.py (optional)
+  ├── requirements.txt
+  └── README.md
+  ```
 - **Frontend**: Streamlit UI (`app.py`) for user interaction.
 - **Backend**: 
   - `query_handler.py`: Processes queries and extracts entities using Ollama.
@@ -11,7 +25,6 @@ The RAG-based Flight Query Bot is a Streamlit-powered web application that allow
   - `mock_database.py`: Provides mock flight data and search functionality.
 - **Deployment**: Kubernetes on Minikube with two services: `flight-assistant-service` (Streamlit) and `ollama-service` (Ollama server).
 - **CI/CD**: GitHub Actions runs unit tests on every push or pull request.
-
 ---
 
 ## Setup Instructions
