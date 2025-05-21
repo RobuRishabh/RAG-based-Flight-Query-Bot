@@ -18,4 +18,4 @@ spec:
           ports:
             - containerPort: 11434
           command: ["/bin/sh", "-c"]
-          args: ["ollama serve & sleep 5 && ollama pull llama2:latest && tail -f /dev/null"]
+          args: ["ollama serve & sleep 5 && ollama pull qwen2.5-coder:3b && tail -f /dev/null"]

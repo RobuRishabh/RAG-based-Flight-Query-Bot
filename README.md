@@ -69,9 +69,9 @@ The project uses a local Ollama server for language processing.
 
 #### Pull the Model:
 ```bash
-ollama pull llama2:latest
+ollama pull qwen2.5-coder:3b
 ```
-This downloads the `llama2:latest` model (default for this project).
+This downloads the `qwen2.5-coder:3b` model (default for this project).
 
 #### Run the Ollama Server:
 ```bash

@@ -22,7 +22,7 @@ EXPOSE 8501
 # ENV OLLAMA_URL=http://localhost:11434
 ENV OLLAMA_URL=http://10.0.0.210:11434
 # ENV OLLAMA_URL=http://host.docker.internal:11434
-ENV OLLAMA_MODEL=llama2:latest
+ENV OLLAMA_MODEL=qwen2.5-coder:3b
 
 
 # Command to run the Streamlit app
