@@ -11,7 +11,7 @@ from mock_database import search_flights
 @pytest.fixture
 def mock_env():
     original_env = os.environ.copy()
-    os.environ["OLLAMA_MODEL"] = "llama2:test"
+    os.environ["OLLAMA_MODEL"] = "qwen2.5-coder:3b"
     yield
     os.environ.clear()
     os.environ.update(original_env)

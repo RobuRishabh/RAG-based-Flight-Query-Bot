@@ -33,13 +33,13 @@ def search_flights(origin=None, destination=None, flight_number=None, airline=No
     """
     print(f"🔍 Searching for: Origin={origin}, Destination={destination}, Flight Number={flight_number}, Airline={airline}")
 
-    # ✅ If flight number is provided, prioritize searching by flight number only
+    # If flight number is provided, prioritize searching by flight number only
     if flight_number:
         matches = [flight for flight in flights if flight["flight_number"].lower() == flight_number.lower()]
         print(f"🔍 Flight number search results: {matches}")
         return matches
 
-    # ✅ If no flight number, apply standard search
+    # If no flight number, apply standard search
     if not any([origin, destination, airline]):
         print("⚠️ No valid search parameters provided. Returning an empty list.")
         return []

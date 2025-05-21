@@ -7,7 +7,7 @@ from mock_database import search_flights, check_ollama_availability
 
 # Load environment variables
 load_dotenv()
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama2:latest")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:3b")
 OLLAMA_AVAILABLE = check_ollama_availability()
 
 # Initialize Ollama LLM
@@ -69,13 +69,13 @@ def extract_entities_ollama(query):
             json_str = json_match.group(0)
             extracted = json.loads(json_str)
 
-            # ✅ Clean extracted values
+            # Clean extracted values
             if extracted.get("destination") == "City Name":
                 extracted["destination"] = None  # Ignore placeholder values
             if extracted.get("origin") == "NYC":
-                extracted["origin"] = "New York"  # Fix Ollama misinterpretation
+                extracted["origin"] = "New York"  # Map city codes to full names
 
-            # ✅ If no flight number is extracted, try regex
+            # If no flight number is extracted, try regex
             if not extracted.get("flight_number"):
                 extracted["flight_number"] = extract_flight_number(query)
 

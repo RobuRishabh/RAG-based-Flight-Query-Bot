@@ -9,7 +9,7 @@ from ollama_api import initialize_ollama, check_ollama_availability, generate_fa
 def mock_env():
     original_env = os.environ.copy()
     os.environ["OLLAMA_URL"] = "http://test:11434"
-    os.environ["OLLAMA_MODEL"] = "llama2:test"
+    os.environ["OLLAMA_MODEL"] = "qwen2.5-coder:3b"
     yield
     os.environ.clear()
     os.environ.update(original_env)
